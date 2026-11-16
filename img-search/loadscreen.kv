@@ -1,0 +1,21 @@
+#:kivy 2.1.0
+<LoadScreen>:
+    GridLayout:
+        cols:1
+        padding:10
+        spacing:5
+        Image:
+            id:img
+            size_hint_y:0.7
+        TextInput:
+            id:input
+            size_hint_y:0.15
+        Button:
+            text:'Search Image'
+            size_hint_y:0.15
+            on_press:root.search_image()
+
+<RootWidget>:
+    LoadScreen:
+        id:load_screen
+        name:'load_screen'
