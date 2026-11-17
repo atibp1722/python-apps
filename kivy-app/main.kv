@@ -1,0 +1,133 @@
+#:kivy 2.1.0
+
+# HomePage:
+# <HomePage>:
+
+#     orientation:'vertical'
+#     MDLabel:
+#         halign:'center'
+#         text:'Testing'
+#         font_style:'H4'
+#         theme_text_color:'Error'
+
+    # MDIcon:
+    #     icon:'leaf'
+    #     size_hint_y:None
+    #     size:dp(25),dp(25)
+    # MDIcon:
+    #     icon:'language-php'
+    # MDIcon:
+    #     icon:'language-python'
+
+# WIDGET
+# Home:
+# <Home>:
+
+#     MDIconButton:
+#         icon:'language-python'
+#         theme_text_color:'Error'
+#         pos:dp(200),dp(100)
+
+#     MDFloatingActionButton:
+#         icon:'language-php'
+#         halign:'center'
+#         md_bg_color:1,0,0,1
+#         pos:dp(300),dp(150)
+
+#     MDFlatButton:
+#         text:'Click Here'
+#         pos:dp(400),dp(200)
+    
+#     MDRoundFlatIconButton:
+#         icon:'language-java'
+#         icon_color:1,0,0,1
+#         text:'Rounded Button'
+#         pos:dp(500),dp(250)
+
+# Home:
+# <Home>:
+
+    # MDRaisedButton:
+    #     text:'Raised Button'
+    #     md_bg_color:app.theme_cls.primary_dark
+
+    # MDRectangleFlatButton:
+    #     text:'Rectangle Button'
+    #     md_bg_color:app.theme_cls.primary_light
+
+    # MDBoxLayout:
+    #     md_bg_color:app.theme_cls.bg_light
+    # MDBoxLayout:
+    #     md_bg_color:app.theme_cls.bg_normal
+    # MDBoxLayout:
+    #     md_bg_color:app.theme_cls.bg_dark
+    # MDBoxLayout:
+    #     md_bg_color:app.theme_cls.bg_darkest
+
+# Home:
+# <Home>:
+
+    # orientation:'vertical'
+    # MDToolbar:
+    #     title:'Test App'
+    #     md_bg_color:app.theme_cls.primary_dark
+    # MDLabel:
+    #     text:'Sample app label area.'
+
+    # MDTextField:
+    #     hint_text:'Start typing here...'
+    #     helper_text:'Only 10 characters allowed!'
+    #     helper_text_mode:'on_error'
+    #     max_text_length:10
+    #     mode:'rectangle'
+    
+    # MDTextFieldRound:
+    #     icon_left:'email'
+    #     hint_text:'Email goes here...'
+
+    # MDBottomAppBar:
+    #     title:'End of app'
+    #     mode:'end'
+
+# HERO BANNER
+Home:
+<Home>:
+
+    MDBanner:
+        id:m_banner
+        text:['This is app banner.']
+        over_widget:banner
+        left_action:['Cancel',lambda x: root.left_button()]
+        right_action:['Close',lambda x: root.right_button()]
+
+    MDBoxLayout:
+        orientation:'vertical'
+        id:banner
+        size_hint_y:None
+        height:Window.height
+
+    MDProgressBar:
+        id:progress
+        type:'determinate'
+        running_duration:3
+
+    MDRaisedButton:
+        text:'Progress Bar'
+        pos:100,250
+        on_press:progress.start()
+        on_release:progress.stop()
+
+    MDSpinner:
+        size_hint:None,None
+        size:dp(50),dp(50)
+        pos:100,350
+        active:True if check.active else False
+
+    MDCheckbox:
+        id:check
+        pos:100,400
+
+    MDRaisedButton:
+        text:'Clck Here'
+        pos:300,400
+        on_release:m_banner.show()
