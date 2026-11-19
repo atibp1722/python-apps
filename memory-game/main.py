@@ -137,6 +137,64 @@ class MemoryGame:
                 card.create_text(40, 50, text=self.symbols[card_index], font=("Arial", 24, "Bold"), fill=self.colors["card_bg"], state="hidden", tags=("symbol",))
                 # add card to list
                 self.cards.append(card)
+    # method for when card is clicked
+    def onCardClick(self, idx):
+        # reveal clicked card
+        self.revealCard(idx)
+        # append card to revealed card list
+        self.revealed.append(idx)
+    # method to reveal card
+    def revealCard(self, idx):
+        # get card index 
+        card = self.cards[idx]
+        # show front and the symbol
+        card.itemconfig("front", state="normal")
+        card.itemconfig("symbol", state="normal")
+    # method to hide card
+    def hideCard(self, idx):
+        card = self.cards[idx]
+        # hide front and the symbol
+        card.itemconfig("front", state="hidden")
+        card.itemconfig("symbol", state="hidden")
+    # method to start a new game
+    def newGame(self):
+        # reset all game variables
+        self.game_solved = False
+        self.revealed.clear()
+        self.match_cards.clear()
+        self.match_pairs.clear()
+        self.moves = 0
+        self.start_time = None
+        # reset game labels
+        self.moves_label.config(text="Moves: 0")
+        self.time_label.config(text="Time: 0:00")
+        # reset game grid
+        self.cards_frame.destroy()
+        self.createGameGrid()
+    # method to change game difficulty level
+    def changeDifficulty(self, event):
+        new_difficulty = self.difficulty_combox.get()
+        # check difficulty changed
+        if new_difficulty != self.current_difficulty:
+            # new game with new difficulty
+            self.current_difficulty = new_difficulty
+            self.newGame()
+    # metod to check for card match
+    def checkMatch(self):
+        # index of revelaed cards
+        idx1, idx2 = self.revealed
+        # check whether symbols match 
+        if self.symbols[idx1] == self.symbols[idx2]:
+            # increment match counter
+            self.match_pairs += 1
+            # add cards to match list
+            self.match_cards.extend([idx1, idx2])
+        # not matching
+        else:
+            # flip to hide both cards
+            self.hideCard(idx1)
+            self.hideCard(idx2)
+        self.revealed.clear()
 
 if __name__ == "__main__":
     root = tk.Tk()
