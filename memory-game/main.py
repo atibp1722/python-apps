@@ -139,10 +139,24 @@ class MemoryGame:
                 self.cards.append(card)
     # method for when card is clicked
     def onCardClick(self, idx):
+        # first click to start game
+        if self.start_time is None:
+            self.start_time = time.time()
+            self.updateTime()
+        # ignore invalid clicks after game completed
+        if idx in self.revealed or idx in self.match_cards or len(self.revealed) == 2:
+            # skip
+            return
         # reveal clicked card
         self.revealCard(idx)
         # append card to revealed card list
         self.revealed.append(idx)
+        # check when two cards clicked
+        if len(self.revealed) == 2:
+            # incremenet move counter and update label
+            self.moves += 1
+            self.moves_label.config(text=f"Moves: {self.moves}")
+            self.master.after(500, self.checkMatch)
     # method to reveal card
     def revealCard(self, idx):
         # get card index 
@@ -189,12 +203,28 @@ class MemoryGame:
             self.match_pairs += 1
             # add cards to match list
             self.match_cards.extend([idx1, idx2])
+            # highlight matching cards
+            for idx in [idx1, idx2]:
+                card = self.cards[idx]
+                # color when cards match
+                card.itemconfig("front", fill="#8bc34a")
         # not matching
         else:
             # flip to hide both cards
             self.hideCard(idx1)
             self.hideCard(idx2)
         self.revealed.clear()
+    # method to update game time
+    def updateTime(self):
+        # game is active
+        if self.start_time and not self.game_solved:
+            # elapsed seconds calculation
+            time_elapsed = int(time.time() - self.start_time)
+            mins, secs = divmod(time_elapsed, 60)
+            # update time label
+            self.time_label.config(text=f"Time: {mins}:{secs:02d}")
+            # update time every second
+            self.master.after(1000, self.updateTime)
 
 if __name__ == "__main__":
     root = tk.Tk()
