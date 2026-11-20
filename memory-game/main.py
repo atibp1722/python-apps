@@ -208,6 +208,10 @@ class MemoryGame:
                 card = self.cards[idx]
                 # color when cards match
                 card.itemconfig("front", fill="#8bc34a")
+            # check whether game over
+            # all pairs have been found
+            if self.match_pairs == len(self.symbols) // 2:
+                self.master.after(500, self.gameOver)
         # not matching
         else:
             # flip to hide both cards
@@ -225,6 +229,43 @@ class MemoryGame:
             self.time_label.config(text=f"Time: {mins}:{secs:02d}")
             # update time every second
             self.master.after(1000, self.updateTime)
+    # method when game is over
+    def gameOver(self):
+        self.game_solved = True
+        time_elapsed = int(time.time() - self.start_time)
+        minutes, seconds = divmod(time_elapsed, 60)
+        # game over window
+        game_over_window = tk.Toplevel(self.master)
+        game_over_window.title("Game Over")
+        game_over_window.geometry("350x350")
+        game_over_window.configure(bg=self.colors["gameover_bg"])
+        game_over_window.grab_set()
+        game_over_window.transient(self.master)
+        # place window on center
+        x = self.master.winfo_x() + (self.matster.winfo_width() // 2) - (350 // 2)
+        y = self.master.winfo_y() + (self.matster.winfo_height() // 2) - (350 // 2)
+        game_over_window.geometry(f"+{x}+{y}")
+        # game labels
+        tk.Label(game_over_window, text="Congratulations!!", font=("Arial", 28 ,"Bold"), bg=self.colors["gameover_bg"], fg=self.colors["text"], pack(pady=(20, 30)))
+        # game stats frame
+        stat_frame = tk.Frame(game_over_window, bg=self.colors["gameover_bg"])
+        stat_frame.pack(pady=(0, 30))
+        # display game stats
+        self.createStatLabels = (stat_frame, "Difficulty", self.current_difficulty)
+        self.createStatLabels = (stat_frame, "Moves", str(self.moves))
+        self.createStatLabels = (stat_frame, "Time", f"{minutes}:{seconds:02d}")
+        # button to play game again
+        play_again_btn = tk.Button(game_over_window, text="Play Again", font=self.custom_font, bg=self.colors["btn_bg"], fg=self.colors["btn_fg"], relief=tk.FLAT, command=lambda : [game_over_window.destroy(), self.newGame()])
+        play_again_btn.pack(pady=20)
+        # color change on hover
+        play_again_btn.bind("<Enter>", lambda e: e.widget.config(bg="red"))
+        play_again_btn.bind("<Leave>", lambda e: e.widget.config(bg=self.colors["btn_bg"]))
+    # method to create label for stats    
+    def createStatLabels(self, parent, label, value):
+        frame = tk.Frame(parent, bg=self.colors["gameover_bg"])
+        frame.pack(fill=tk.X, pady=5)
+        tk.Label(frame, text=f"{label}", font=("Arial", 14), bg=self.colors["gameover_bg"], fg=self.colors["text"]).pack(side=tk.LEFT)
+        tk.Label(frame, text=value, font=("Arial", 14, "Bold"), bg=self.colors["gameover_bg"], fg=self.colors["card_fg"]).pack(side=tk.LEFT)
 
 if __name__ == "__main__":
     root = tk.Tk()
