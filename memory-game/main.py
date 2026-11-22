@@ -10,7 +10,7 @@ class MemoryGame:
         self.master.title("Memory Game")
         self.master.geometry("800x600")
         self.master.configure(bg="#1a1a2e")
-        self.custom_font("Arial", 16, "Bold")
+        self.custom_font = ("Arial", 16, "Bold")
         # color dictionary
         self.colors = {
             "bg": "#1a1a2e",
@@ -29,13 +29,15 @@ class MemoryGame:
         self.difficulty_levels = {
             "Easy": {
                 "grid": (4, 4), "symbols": ["●", "✦", "✿", "★", "❤︎", "◼", "▲", "𖦹"]
-            }
+            },
             "Medium": {
-                "grid": (4, 5), "symbols": ["●", "✦", "✿", "★", "❤︎", "◼", "▲", "𖦹", "⬟", "☀︎"]
-            }
+                "grid": (4, 5), 
+                "symbols": ["●", "✦", "✿", "★", "❤︎", "◼", "▲", "𖦹", "⬟", "☀︎"]
+            },
             "Hard": {
-            "grid": (5, 6), "symbols": ["●", "✦", "✿", "★", "❤︎", "◼", "▲", "𖦹", "⬟", "☀︎", "☕︎", "♛", "☮︎", "🏠︎", "✈︎"]
-            }
+                "grid": (5, 6),"symbols": ["●", "✦", "✿", "★", "❤︎", "◼", "▲", "𖦹", "⬟", "☀︎", "☕︎", "♛", "☮︎", "🏠︎", "✈︎",
+                ],
+            },
         }
         # intial game state varaibles
         self.current_difficulty = "Easy"
@@ -126,7 +128,7 @@ class MemoryGame:
                 # place card i grid
                 card.grid(row=i, column=j, padx=6, pady=0)
                 # add click event to card
-                card.bind("<Button-1>", lambda e, idx=card_index, self.onCardClick(idx))
+                card.bind("<Button-1>", lambda e, idx=card_index: self.onCardClick(idx))
                 # visible part of card (back)
                 card.create_rectangle(5, 5, 75, 95, fill=self.colors["card_bg"], outline=self.colors["card_fg"], width=2)
                 card.create_text(40, 50, text="?", font=("Arial", 24, "Bold"), fill=self.colors["card_fg"])
@@ -246,7 +248,7 @@ class MemoryGame:
         y = self.master.winfo_y() + (self.matster.winfo_height() // 2) - (350 // 2)
         game_over_window.geometry(f"+{x}+{y}")
         # game labels
-        tk.Label(game_over_window, text="Congratulations!!", font=("Arial", 28 ,"Bold"), bg=self.colors["gameover_bg"], fg=self.colors["text"], pack(pady=(20, 30)))
+        tk.Label(game_over_window, text="Congratulations!!", font=("Arial", 28 ,"Bold"), bg=self.colors["gameover_bg"], fg=self.colors["text"]), pack(pady=(20, 30))
         # game stats frame
         stat_frame = tk.Frame(game_over_window, bg=self.colors["gameover_bg"])
         stat_frame.pack(pady=(0, 30))
