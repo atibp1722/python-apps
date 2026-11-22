@@ -180,7 +180,6 @@ class MemoryGame:
         self.game_solved = False
         self.revealed.clear()
         self.match_cards.clear()
-        self.match_pairs.clear()
         self.moves = 0
         self.start_time = None
         # reset game labels
@@ -189,7 +188,7 @@ class MemoryGame:
         # reset game grid
         self.match_pairs = 0
         if self.cards_frame is not None:
-            self.cards_frame.destroy(0)
+            self.cards_frame.destroy()
         self.createGameGrid()
     # method to change game difficulty level
     def changeDifficulty(self, event):
