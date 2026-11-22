@@ -10,7 +10,7 @@ class MemoryGame:
         self.master.title("Memory Game")
         self.master.geometry("800x600")
         self.master.configure(bg="#1a1a2e")
-        self.custom_font = ("Arial", 16, "Bold")
+        self.custom_font = ("Arial", 16, "bold")
         # color dictionary
         self.colors = {
             "bg": "#1a1a2e",
@@ -19,7 +19,7 @@ class MemoryGame:
             "card_fg": "#e94560",
             "text": "#ffffff",
             "btn_bg": "#4caf50",
-            "btn_fg": "ffffff",
+            "btn_fg": "#ffffff",
             "combox_bg": "#32374b",
             "combox_fg": "#ffffff",
             "gameover_bg": "#0f3460"
@@ -48,7 +48,9 @@ class MemoryGame:
         self.start_time = None
         self.game_solved = False
         # method call to create game main elements
+        self.cards_frame = None
         self.createMainElements()
+        self.createGameGrid()
     # method to create game elements    
     def createMainElements(self):
         # game frame window
@@ -68,9 +70,9 @@ class MemoryGame:
         self.createSidebar()
     def createSidebar(self):
         # create title label
-        title_label = tk.Label(self.sidebar, text="Memory Game", font=("Arial", 24, "Bold"), bg=self.colors["sidebar_bg"], fg=self.colors["text"])
+        title_label = tk.Label(self.sidebar, text="Memory Game", font=("Arial", 24, "bold"), bg=self.colors["sidebar_bg"], fg=self.colors["text"])
         title_label.pack(pady=(30, 10))
-        subtitle_label = tk.Label(self.sidebar, text="Test Your Memory", font=("Arial", 16, "Regular"), bg=self.colors["sidebar_bg"], fg=self.colors["text"])
+        subtitle_label = tk.Label(self.sidebar, text="Test Your Memory", font=("Arial", 16, "bold"), bg=self.colors["sidebar_bg"], fg=self.colors["text"])
         subtitle_label.pack(pady=(0, 30))
         difficulty_label = tk.Label(self.sidebar, text="Difficulty: ", font=self.custom_font, bg=self.colors["sidebar_bg"], fg=self.colors["text"])
         difficulty_label.pack(pady=(0, 5))
@@ -78,12 +80,12 @@ class MemoryGame:
         self.style = ttk.Style()
         # combo box custom theme
         self.style.theme_create("modern", parent="alt", settings = {
-            "ICombobox": {
+            "TCombobox": {
                 "configure": {
                     "selectbackground": self.colors["combox_bg"],
                     "fieldbackground": self.colors["combox_bg"],
                     "background": self.colors["btn_bg"],
-                    "forekground": self.colors["btn_fg"]
+                    "foreground": self.colors["combox_fg"]
                 }
             }
         })
@@ -100,10 +102,10 @@ class MemoryGame:
         self.time_label = tk.Label(self.sidebar, text="Time: 0:00", font=self.custom_font, bg=self.colors["sidebar_bg"], fg=self.colors["text"])
         self.time_label.pack(pady=10)
         # new game button
-        self.newgame_btn = tk.Label(self.sidebar, text="New Game", font=self.custom_font, bg=self.colors["btn_bg"], fg=self.colors["btn_fg"], relief=tk.FLAT, command=self.newGame)
+        self.newgame_btn = tk.Button(self.sidebar, text="New Game", font=self.custom_font, bg=self.colors["btn_bg"], fg=self.colors["btn_fg"], relief=tk.FLAT, command=self.newGame)
         self.newgame_btn.pack(pady=30)
         # button effects
-        self.newgame_btn.bind("<Enter>", lambda e: e.widget.config("red"))
+        self.newgame_btn.bind("<Enter>", lambda e: e.widget.config(bg="red"))
         self.newgame_btn.bind("<Leave>", lambda e: e.widget.config(bg=self.colors["btn_bg"]))
     # method to create grid to hold and play with cards     
     def createGameGrid(self):
@@ -113,7 +115,7 @@ class MemoryGame:
         # store cards
         self.cards = []
         # diffuclty level dimension
-        row, cols = self.difficulty_levels[self.current_difficulty]["grid"]
+        rows, cols = self.difficulty_levels[self.current_difficulty]["grid"]
         # double symbols to generate pairs
         symbols = self.difficulty_levels[self.current_difficulty]["symbols"] * 2
         random.shuffle(symbols)
@@ -124,19 +126,19 @@ class MemoryGame:
                 # index from row and column
                 card_index = i * cols + j
                 # create individual card
-                card = tk.canvas(self.cards_frame, width=80, height=100, bg=self.colors["card_bg"], highlightthickness=0)
+                card = tk.Canvas(self.cards_frame, width=80, height=100, bg=self.colors["card_bg"], highlightthickness=0)
                 # place card i grid
                 card.grid(row=i, column=j, padx=6, pady=0)
                 # add click event to card
                 card.bind("<Button-1>", lambda e, idx=card_index: self.onCardClick(idx))
                 # visible part of card (back)
                 card.create_rectangle(5, 5, 75, 95, fill=self.colors["card_bg"], outline=self.colors["card_fg"], width=2)
-                card.create_text(40, 50, text="?", font=("Arial", 24, "Bold"), fill=self.colors["card_fg"])
+                card.create_text(40, 50, text="?", font=("Arial", 24, "bold"), fill=self.colors["card_fg"])
                 # hidden card front
                 # set state to hidden so it can be referenced and changed later
                 card.create_rectangle(5, 5, 75, 95, fill=self.colors["card_fg"], outline=self.colors["card_bg"], width=2, state="hidden", tags=("front",))
                 # card symbol also hidden for later reference
-                card.create_text(40, 50, text=self.symbols[card_index], font=("Arial", 24, "Bold"), fill=self.colors["card_bg"], state="hidden", tags=("symbol",))
+                card.create_text(40, 50, text=self.symbols[card_index], font=("Arial", 24, "bold"), fill=self.colors["card_bg"], state="hidden", tags=("symbol",))
                 # add card to list
                 self.cards.append(card)
     # method for when card is clicked
@@ -185,7 +187,9 @@ class MemoryGame:
         self.moves_label.config(text="Moves: 0")
         self.time_label.config(text="Time: 0:00")
         # reset game grid
-        self.cards_frame.destroy()
+        self.match_pairs = 0
+        if self.cards_frame is not None:
+            self.cards_frame.destroy(0)
         self.createGameGrid()
     # method to change game difficulty level
     def changeDifficulty(self, event):
@@ -244,18 +248,19 @@ class MemoryGame:
         game_over_window.grab_set()
         game_over_window.transient(self.master)
         # place window on center
-        x = self.master.winfo_x() + (self.matster.winfo_width() // 2) - (350 // 2)
-        y = self.master.winfo_y() + (self.matster.winfo_height() // 2) - (350 // 2)
+        self.master.update_idletasks()
+        x = self.master.winfo_x() + (self.master.winfo_width() // 2) - (350 // 2)
+        y = self.master.winfo_y() + (self.master.winfo_height() // 2) - (350 // 2)
         game_over_window.geometry(f"+{x}+{y}")
         # game labels
-        tk.Label(game_over_window, text="Congratulations!!", font=("Arial", 28 ,"Bold"), bg=self.colors["gameover_bg"], fg=self.colors["text"]), pack(pady=(20, 30))
+        tk.Label(game_over_window, text="Congratulations!!", font=("Arial", 28 ,"bold"), bg=self.colors["gameover_bg"], fg=self.colors["text"]).pack(pady=(20, 30))
         # game stats frame
         stat_frame = tk.Frame(game_over_window, bg=self.colors["gameover_bg"])
         stat_frame.pack(pady=(0, 30))
         # display game stats
-        self.createStatLabels = (stat_frame, "Difficulty", self.current_difficulty)
-        self.createStatLabels = (stat_frame, "Moves", str(self.moves))
-        self.createStatLabels = (stat_frame, "Time", f"{minutes}:{seconds:02d}")
+        self.createStatLabels(stat_frame, "Difficulty", self.current_difficulty)
+        self.createStatLabels(stat_frame, "Moves", str(self.moves))
+        self.createStatLabels(stat_frame, "Time", f"{minutes}:{seconds:02d}")
         # button to play game again
         play_again_btn = tk.Button(game_over_window, text="Play Again", font=self.custom_font, bg=self.colors["btn_bg"], fg=self.colors["btn_fg"], relief=tk.FLAT, command=lambda : [game_over_window.destroy(), self.newGame()])
         play_again_btn.pack(pady=20)
@@ -267,7 +272,7 @@ class MemoryGame:
         frame = tk.Frame(parent, bg=self.colors["gameover_bg"])
         frame.pack(fill=tk.X, pady=5)
         tk.Label(frame, text=f"{label}", font=("Arial", 14), bg=self.colors["gameover_bg"], fg=self.colors["text"]).pack(side=tk.LEFT)
-        tk.Label(frame, text=value, font=("Arial", 14, "Bold"), bg=self.colors["gameover_bg"], fg=self.colors["card_fg"]).pack(side=tk.LEFT)
+        tk.Label(frame, text=value, font=("Arial", 14, "bold"), bg=self.colors["gameover_bg"], fg=self.colors["card_fg"]).pack(side=tk.LEFT)
 
 if __name__ == "__main__":
     root = tk.Tk()
