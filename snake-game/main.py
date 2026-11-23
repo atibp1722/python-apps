@@ -120,13 +120,13 @@ class Snake(Chainable):
         if (self.direction == "right" and direction == "left"):
             pass
         # prevent left -> right turn
-        if (self.direction == "left" and direction == "right"):
+        elif (self.direction == "left" and direction == "right"):
             pass
         # prevent up -> left down
-        if (self.direction == "up" and direction == "down"):
+        elif (self.direction == "up" and direction == "down"):
             pass
         # prevent down -> up turn
-        if (self.direction == "down" and direction == "up"):
+        elif (self.direction == "down" and direction == "up"):
             pass
         # update direction
         else:
@@ -157,10 +157,10 @@ class Snake(Chainable):
         if (self.direction == "up"):
             newHeadPos = [head.pos[0], head.pos[1] - self.moveDist]
         # move down increase y
-        if (self.direction == "down"):
+        elif (self.direction == "down"):
             newHeadPos = [head.pos[0], head.pos[1] + self.moveDist]
         # move left decrease x
-        if (self.direction == "left"):
+        elif (self.direction == "left"):
             newHeadPos = [head.pos[0] - self.moveDist, head.pos[1]]
         else:
             newHeadPos = [head.pos[0] + self.moveDist, head.pos[1]]
@@ -185,3 +185,123 @@ def checkCollison(rect1, rect2):
         return True
     else:
         return False
+
+# function to change direction of snake object
+def changeDirection(direction, snake):
+    snake.changeDirection(direction)
+
+# function to render score surface
+def setFontSurface(snakeSize):
+    font = pygame.font.Font("PixelGameFont.ttf", 60)
+    surface = font.render("Score: %d" % snakeSize, True, (255, 255, 255), (0, 0, 0))
+    return surface
+
+# function to render game over surface
+def gameOverSurface():
+    font = pygame.font.Font("PixelGameFont.ttf", 120)
+    surface = font.render("Game Over!", True, (255, 255, 255), (0, 0, 0))
+    return surface
+
+# function to initialize pygame for game window
+def gameScreen():
+    # initialize all modules
+    pygame.init()
+    # create game window
+    screen = pygame.display.set_mode(screen_width_height)
+    return screen
+
+# game loop
+def main():
+    # setup game environment variables
+    screen = gameScreen()
+    fillRect = Rect(0, 0, screen_width_height[0], screen_width_height[1])
+    screen.fill((255, 0, 0))
+    score = setFontSurface(0)
+    scoreRect = score.get_rect()
+    scoreRect.x = 100
+    scoreRect.y = 100
+    # object for game over surface
+    gameOverSurface = gameOverSurface()
+    gameOverRect = gameOverSurface.get_rect()
+    # center horizontally and vertically
+    gameOverRect.x = screen_width_height[0] / 2 - gameOverRect.w / 2
+    gameOverRect.y = screen_width_height[1] / 2 - gameOverRect.h / 2
+    # create wall
+    wall = Wall()
+    # create snake
+    snake = Snake()
+    # create food at random position
+    food = Food()
+    # game flag
+    running = True
+    frameSinceLastMove = 0
+    # actual game loop
+    while(running):
+        # delay for small amount of time before each loop
+        time.sleep(1.0 / fps)
+        # get next game event
+        event = pygame.event.get()
+        direction = ""
+        # check whether player quit
+        if (event.type == QUIT):
+            running = False
+            continue
+        # listen for directional key press and move snake accordingly
+        elif (event.type == KEYDOWN):
+            # directinal keys pressed
+            if (event.key == K_UP):
+                changeDirection("up", snake)
+            elif (event.key == K_DOWN):
+                changeDirection("down", snake)
+            elif (event.key == K_LEFT):
+                changeDirection("left", snake)
+            elif (event.key == K_RIGHT):
+                changeDirection("right", snake)
+            elif (event.key == K_ESCAPE):
+                runnng = False
+                continue
+        # display updated score
+        score = setFontSurface(snake.size)
+        screen.fill((0, 0, 0))
+        # draw score on screen
+        screen.blit(score, scoreRect)
+        food.draw(screen)
+        # draw snake and wall
+        snake.draw(screen)
+        wall.draw(screen)
+        # move snake one step
+        if (frameSinceLastMove == frames_to_delay):
+            snake.move()
+            frameSinceLastMove = 0
+        # bind snake head
+        headRect = Rect(snake.head.pos[0], snake.head.pos[1], block_size, block_size)
+        foodRect = Rect(food.head.pos[0], food.head.pos[1], block_size, block_size)
+        # check whether head reach food
+        if (checkCollison(headRect, foodRect)):
+            food = Food()
+            # grow snake by one
+            snake.addNewSegment()
+        # check whether sake collided with body segment
+        if (snake.checkTailCollison()):
+            # display game over surface and exit game
+            screen.blit(gameOverSurface, gameOverRect)
+            pygame.display.update()
+            time.sleep(3)
+            running = False
+            continue
+        # check whether snake collided with wall
+        if (wall.checkWallCollison()):
+            # display game over surface and exit
+            screen.blit(gameOverSurface, gameOverRect)
+            pygame.display.update()
+            time.sleep(3)
+            running = False
+            continue
+        # refresh screen
+        pygame.display.flip()
+        pygame.display.update()
+        # increase frame count
+        frameSinceLastMove += 1
+
+if __name__ == "__main__":
+    main()
