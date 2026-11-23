@@ -41,7 +41,7 @@ class BodySegment:
 
 # class for wall segment inherit from Block
 class WallSegment(Block):
-    # same constrcutor as body segemnt class
+    # same constrcutor as body segment class
     def __init__(self, pos):
         Block.__init__(self)
         self.color = pygame.Color(200, 200, 200)
@@ -62,7 +62,7 @@ class Food(Block):
 
 # class to make multiple body segments chainable to one
 class Chainable:
-    # method to draw all segemnts on game screen
+    # method to draw all segments on game screen
     def draw(self, screen):
         for seg in self.segments:
             seg.draw(screen)
@@ -92,6 +92,96 @@ class Wall(Chainable):
             # boundary of current border
             rect2 = Rect(seg.pos[0], seg.pos[1], block_size, block_size)
             # check overlap between head and border
-            if checkCollison(rect1, rect2):
+            if (checkCollison(rect1, rect2)):
                 return True
+        return False
+
+# class to create a chainable snake
+class Snake(Chainable):
+    # consructor to initialize snake
+    def __init__(self):
+        # intial snake properties
+        self.direction = "right"
+        self.moveDist = block_size * moving_speed
+        self.segments = []
+        self.size = 0
+        # check snake segment
+        for i in range(2):
+            if i == 0:
+                # first segment is head
+                self.segments.append( BodySegment([block_size, 200]) )
+                self.head = self.segments[0]
+            # second segment behind head becomes body
+            else:
+                self.segments.append( BodySegment([0, 200]) )
+    # update snake direction
+    def changeDirection(self, direction):
+        # prevent right -> left turn
+        if (self.direction == "right" and direction == "left"):
+            pass
+        # prevent left -> right turn
+        if (self.direction == "left" and direction == "right"):
+            pass
+        # prevent up -> left down
+        if (self.direction == "up" and direction == "down"):
+            pass
+        # prevent down -> up turn
+        if (self.direction == "down" and direction == "up"):
+            pass
+        # update direction
+        else:
+            self.direction = direction
+    # check snake head collide with tail
+    def checkTailCollison(self):
+        # iterate and move to next segment 
+        for i, seg in enumerate(self.segments):
+            if i == 0:
+                continue
+            # bind head
+            rect1 = Rect(self.head.pos[0], self.head.pos[1], block_size, block_size)
+            # bind snake body
+            rect2 = Rect(seg.pos[0], seg.pos[1], block_size, block_size)
+            # check whether head and body are in same coordinates
+            if (checkCollison(rect1, rect2)):
+                return True
+        return False
+    # method to move the snake
+    def move(self):
+        # snake current length
+        segmentsLen = len(self.segments)
+        # head position reference
+        head = self.segments[0]
+        # new head position
+        newHeadPos = []
+        # move up decrease position in y
+        if (self.direction == "up"):
+            newHeadPos = [head.pos[0], head.pos[1] - self.moveDist]
+        # move down increase y
+        if (self.direction == "down"):
+            newHeadPos = [head.pos[0], head.pos[1] + self.moveDist]
+        # move left decrease x
+        if (self.direction == "left"):
+            newHeadPos = [head.pos[0] - self.moveDist, head.pos[1]]
+        else:
+            newHeadPos = [head.pos[0] + self.moveDist, head.pos[1]]
+        # save last segment position
+        self.tailLastPos = self.segments[segmentsLen - 1].pos
+        # set position of each segment to next
+        for i in range(segmentsLen - 1, 0, -1):
+            self.segments[1].move( self.segments[i - 1].pos )
+        # move head to new position
+        self.segments[0].move( newHeadPos )
+    # grow snake by adding new segment
+    def addNewSegment(self):
+        # append new segment to tail
+        self.segments.append( BodySegment(self.tailLastPos) )
+        # increase snake size
+        self.size += 1
+
+# function to check whether 2 rectangle overlap
+def checkCollison(rect1, rect2):
+    # check for exact coordinates match
+    if (rect1.x == rect2.x and rect1.y == rect2.y):
+        return True
+    else:
         return False
