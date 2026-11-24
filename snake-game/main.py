@@ -193,13 +193,13 @@ def changeDirection(direction, snake):
 
 # function to render score surface
 def setFontSurface(snakeSize):
-    font = pygame.font.Font("PixelGameFont.ttf", 60)
+    font = pygame.font.SysFont("arial", 60)
     surface = font.render("Score: %d" % snakeSize, True, (255, 255, 255), (0, 0, 0))
     return surface
 
 # function to render game over surface
 def gameOverSurface():
-    font = pygame.font.Font("PixelGameFont.ttf", 120)
+    font = pygame.font.SysFont("arial", 120)
     surface = font.render("Game Over!", True, (255, 255, 255), (0, 0, 0))
     return surface
 
@@ -269,7 +269,7 @@ def main():
             frameSinceLastMove = 0
         # bind snake head
         headRect = Rect(snake.head.pos[0], snake.head.pos[1], block_size, block_size)
-        foodRect = Rect(food.head.pos[0], food.head.pos[1], block_size, block_size)
+        foodRect = Rect(food.pos[0], food.pos[1], block_size, block_size)
         # check whether head reach food
         if (checkCollison(headRect, foodRect)):
             food = Food()
