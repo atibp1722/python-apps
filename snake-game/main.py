@@ -241,7 +241,7 @@ def main():
         # delay for small amount of time before each loop
         time.sleep(1.0 / fps)
         # get next game event
-        for event in pygame.event.get()
+        for event in pygame.event.get():
             direction = ""
             # check whether player quit
             if (event.type == QUIT):
@@ -261,15 +261,8 @@ def main():
                 elif (event.key == K_ESCAPE):
                     runnng = False
                     break
-        # display updated score
-        score = setFontSurface(snake.size)
-        screen.fill((0, 0, 0))
-        # draw score on screen
-        screen.blit(score, scoreRect)
-        food.draw(screen)
-        # draw snake and wall
-        snake.draw(screen)
-        wall.draw(screen)
+        if not running:
+            continue
         # move snake one step
         if (frameSinceLastMove == frames_to_delay):
             snake.move()
@@ -282,6 +275,15 @@ def main():
             food = Food()
             # grow snake by one
             snake.addNewSegment()
+        # display updated score
+        score = setFontSurface(snake.size)
+        screen.fill((0, 0, 0))
+        # draw score on screen
+        screen.blit(score, scoreRect)
+        food.draw(screen)
+        # draw snake and wall
+        snake.draw(screen)
+        wall.draw(screen)
         # check whether sake collided with body segment
         if (snake.checkTailCollison()):
             # display game over surface and exit game
