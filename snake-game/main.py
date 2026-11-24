@@ -2,7 +2,7 @@
 import pygame, time, random, math
 from pygame.locals import *
 # game screen dimensions
-screen_width_height = 1200, 1200
+screen_width_height = 800, 800
 # fps for game loop
 fps = 60.0
 # speed counter
@@ -23,27 +23,27 @@ class Block:
         self.square_size = block_size
         self.pos = [0, 0]
     # create block on game screen
-    def draw(self):
+    def draw(self, screen):
         rect = Rect(self.pos[0], self.pos[1], block_size, block_size)
         screen.fill(self.color, rect)
 
 # class for snake body segment
-class BodySegment:
+class BodySegment(Block):
     # constructor with position
     def __init__(self, pos):
-        Block.__init__(self)
+        super().__init__()
         self.color = pygame.Color(200, 200, 200)
-        self.pos = pos
+        self.pos = list(pos)
     # method to move to new position    
     def move(self, newPos):
         # update position
-        self.pos = newPos
+        self.pos = list(newPos)
 
 # class for wall segment inherit from Block
 class WallSegment(Block):
     # same constrcutor as body segment class
     def __init__(self, pos):
-        Block.__init__(self)
+        super().__init__()
         self.color = pygame.Color(200, 200, 200)
         self.pos = pos
 
@@ -166,7 +166,7 @@ class Snake(Chainable):
         else:
             newHeadPos = [head.pos[0] + self.moveDist, head.pos[1]]
         # save last segment position
-        self.tailLastPos = self.segments[segmentsLen - 1].pos
+        self.tailLastPos = list(self.segments[segmentsLen - 1].pos)
         # set position of each segment to next
         for i in range(segmentsLen - 1, 0, -1):
             self.segments[i].move( self.segments[i - 1].pos )
@@ -193,7 +193,7 @@ def changeDirection(direction, snake):
 
 # function to render score surface
 def setFontSurface(snakeSize):
-    font = pygame.font.SysFont("arial", 60)
+    font = pygame.font.SysFont("arial", 30)
     surface = font.render("Score: %d" % snakeSize, True, (255, 255, 255), (0, 0, 0))
     return surface
 
@@ -219,8 +219,8 @@ def main():
     screen.fill((255, 0, 0))
     score = setFontSurface(0)
     scoreRect = score.get_rect()
-    scoreRect.x = 100
-    scoreRect.y = 100
+    # put game score on top left corner
+    scoreRect.topleft = (block_size + 10, block_size + 10)
     # object for game over surface
     game_over_surface = gameOverSurface()
     gameOverRect = game_over_surface.get_rect()
@@ -259,7 +259,7 @@ def main():
                 elif (event.key == K_RIGHT):
                     changeDirection("right", snake)
                 elif (event.key == K_ESCAPE):
-                    runnng = False
+                    running = False
                     break
         if not running:
             continue
@@ -287,15 +287,15 @@ def main():
         # check whether sake collided with body segment
         if (snake.checkTailCollison()):
             # display game over surface and exit game
-            screen.blit(gameOverSurface, gameOverRect)
+            screen.blit(game_over_surface, gameOverRect)
             pygame.display.update()
             time.sleep(3)
             running = False
             continue
         # check whether snake collided with wall
-        if (wall.checkWallCollison()):
+        if (wall.checkWallCollison(snake)):
             # display game over surface and exit
-            screen.blit(gameOverSurface, gameOverRect)
+            screen.blit(game_over_surface, gameOverRect)
             pygame.display.update()
             time.sleep(3)
             running = False
