@@ -19,7 +19,7 @@ block_size = 50
 class Block:
     # constructor for block properties
     def __init__(self):
-        self.color = pygame.color(255, 0, 0)
+        self.color = pygame.Color(255, 0, 0)
         self.square_size = block_size
         self.pos = [0, 0]
     # create block on game screen
@@ -82,7 +82,7 @@ class Wall(Chainable):
             # left wall border
             self.segments.append( WallSegment([0, y]) )
             # top wall border
-            self.segments.append( WallSegment([screen_width_height[1] - block_size, y]) )
+            self.segments.append( WallSegment([screen_width_height[0] - block_size, y]) )
     # method to check whether snake head collides with wall
     def checkWallCollison(self, snake):
         # boundary of snake head
@@ -106,14 +106,15 @@ class Snake(Chainable):
         self.segments = []
         self.size = 0
         # check snake segment
+        self.tailLastPos = [block_size * 2, 200]
         for i in range(2):
             if i == 0:
                 # first segment is head
-                self.segments.append( BodySegment([block_size, 200]) )
+                self.segments.append( BodySegment([block_size * 3, 200]) )
                 self.head = self.segments[0]
             # second segment behind head becomes body
             else:
-                self.segments.append( BodySegment([0, 200]) )
+                self.segments.append( BodySegment([block_size * 2, 200]) )
     # update snake direction
     def changeDirection(self, direction):
         # prevent right -> left turn
@@ -168,7 +169,7 @@ class Snake(Chainable):
         self.tailLastPos = self.segments[segmentsLen - 1].pos
         # set position of each segment to next
         for i in range(segmentsLen - 1, 0, -1):
-            self.segments[1].move( self.segments[i - 1].pos )
+            self.segments[i].move( self.segments[i - 1].pos )
         # move head to new position
         self.segments[0].move( newHeadPos )
     # grow snake by adding new segment
@@ -221,8 +222,8 @@ def main():
     scoreRect.x = 100
     scoreRect.y = 100
     # object for game over surface
-    gameOverSurface = gameOverSurface()
-    gameOverRect = gameOverSurface.get_rect()
+    game_over_surface = gameOverSurface()
+    gameOverRect = game_over_surface.get_rect()
     # center horizontally and vertically
     gameOverRect.x = screen_width_height[0] / 2 - gameOverRect.w / 2
     gameOverRect.y = screen_width_height[1] / 2 - gameOverRect.h / 2
@@ -240,26 +241,26 @@ def main():
         # delay for small amount of time before each loop
         time.sleep(1.0 / fps)
         # get next game event
-        event = pygame.event.get()
-        direction = ""
-        # check whether player quit
-        if (event.type == QUIT):
-            running = False
-            continue
-        # listen for directional key press and move snake accordingly
-        elif (event.type == KEYDOWN):
-            # directinal keys pressed
-            if (event.key == K_UP):
-                changeDirection("up", snake)
-            elif (event.key == K_DOWN):
-                changeDirection("down", snake)
-            elif (event.key == K_LEFT):
-                changeDirection("left", snake)
-            elif (event.key == K_RIGHT):
-                changeDirection("right", snake)
-            elif (event.key == K_ESCAPE):
-                runnng = False
-                continue
+        for event in pygame.event.get()
+            direction = ""
+            # check whether player quit
+            if (event.type == QUIT):
+                running = False
+                break
+            # listen for directional key press and move snake accordingly
+            elif (event.type == KEYDOWN):
+                # directinal keys pressed
+                if (event.key == K_UP):
+                    changeDirection("up", snake)
+                elif (event.key == K_DOWN):
+                    changeDirection("down", snake)
+                elif (event.key == K_LEFT):
+                    changeDirection("left", snake)
+                elif (event.key == K_RIGHT):
+                    changeDirection("right", snake)
+                elif (event.key == K_ESCAPE):
+                    runnng = False
+                    break
         # display updated score
         score = setFontSurface(snake.size)
         screen.fill((0, 0, 0))
