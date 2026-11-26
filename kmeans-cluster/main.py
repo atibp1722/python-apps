@@ -86,6 +86,7 @@ class KMeans:
         return sum(distance) == 0
     # method to plot values
     def plot(self):
+        plt.close("all")
         # cluster and centroids to plot
         fig, ax = plt.subplots(figsize=(10, 5))
         # iterate all cluster index
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     clusters = len(np.unique(y))
     print(clusters)
     # object to intialize class and its emthods
-    kmns = KMeans(K=clusters, max_iters=100, plot_steps=True)
+    kmns = KMeans(K=clusters, max_iters=100, plot_steps=False)
     # make and plot predictions
     y_pred = kmns.predict(X)
     kmns.plot() 
