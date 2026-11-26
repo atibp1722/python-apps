@@ -21,8 +21,7 @@ class KMeans:
         # store input
         self.X = X
         # samples and features
-        self.n_samples = X.shape
-        self.n_features = X.shape
+        self.n_samples, self.n_features = X.shape
         random_sample_index = np.random.choice(self.n_samples, self.K, replace=False)
         self.centroids = [self.X[index] for index in random_sample_index]
         # iterate to define clusters
@@ -71,7 +70,7 @@ class KMeans:
         return closest_index
     # method to get centroids
     def _getCentroids(self, clusters):
-        centroids = np.zeros(self.K, self.n_features)
+        centroids = np.zeros((self.K, self.n_features))
         # iterate each cluster and its index
         for cluster_index, cluster in enumerate(clusters):
             # calcluate mean 
@@ -113,4 +112,4 @@ if __name__ == "__main__":
     kmns = KMeans(K=clusters, max_iters=100, plot_steps=True)
     # make and plot predictions
     y_pred = kmns.predict(X)
-    kmns.plot()
+    kmns.plot() 
